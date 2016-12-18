@@ -21,10 +21,10 @@ def is_server_respond_with_200(url):
         print('It seems that', url, 'is down')
 
 
-def get_domain_expiration_date(url, proxies_list):
+def get_domain_expiration_date(url):
     url = urllib.parse.urlparse(url).netloc
     whois_api = "https://madchecker.com/domain/api/{}?properties=expiration"
-    proxy = {"http": random.choice(proxies_list)}
+    proxy = {"http": random.choice(get_proxies_list())}
 
     while 1:
         try:
@@ -46,15 +46,13 @@ def pretty_print(domains_data):
 
 def main():
     domains_data = []
-
-    urls = load_urls4check('urls')
-    proxies = get_proxies_list()
+    urls = load_urls4check(input('Enter the path to a textfile with urls: '))
 
     for index, url in enumerate(urls, 1):
         print('fetching url', index, '...')
         status = is_server_respond_with_200(url)
         if status:
-            expiration_date = get_domain_expiration_date(url, proxies)
+            expiration_date = get_domain_expiration_date(url)
             domains_data.extend([(url, status, expiration_date)])
 
     pretty_print(domains_data)
